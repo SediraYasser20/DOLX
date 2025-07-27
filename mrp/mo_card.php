@@ -939,8 +939,16 @@ if ($action == 'cancel') {
 						print '<a class="butActionRefused" href="#" title="'.$langs->trans("GoOnTabProductionToProduceFirst", $langs->transnoentitiesnoconv("Production")).'">'.$langs->trans("Close").'</a>'."\n";
 					}
 
-					if ($object->status == $object::STATUS_VALIDATED || (($object->status == $object::STATUS_INPROGRESS || $object->status == $object::STATUS_PRODUCED) && $user->admin)) {
-						print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=cancel&token=' . newToken() . '">' . $langs->trans("Cancel") . '</a>' . "\n";
+					if ($object->status == $object::STATUS_VALIDATED || ($object->status == $object::STATUS_INPROGRESS || $object->status == $object::STATUS_PRODUCED)) {
+						if ($nbProduced > 0) {
+							if ($user->admin) {
+								print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=cancel&token=' . newToken() . '">' . $langs->trans("Cancel") . '</a>' . "\n";
+							}
+						} else {
+							if ($object->status == $object::STATUS_VALIDATED) {
+								print '<a class="butActionDelete" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=cancel&token=' . newToken() . '">' . $langs->trans("Cancel") . '</a>' . "\n";
+							}
+						}
 					}
 				}
 
