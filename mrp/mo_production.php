@@ -251,9 +251,6 @@ if (empty($reshook)) {
 		$object->setProject(GETPOSTINT('projectid'));
 	}
 
-if ($action == 'confirm_reopen' && $user->admin) {
-    $result = $object->setStatut($object::STATUS_INPROGRESS, 0, '', 'MRP_REOPEN');
-}
 
 
 	if (($action == 'confirm_addconsumeline' && GETPOST('addconsumelinebutton') && $permissiontoadd)

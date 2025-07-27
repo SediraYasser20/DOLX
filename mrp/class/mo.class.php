@@ -1410,7 +1410,7 @@ public function createProduction(User $user, $notrigger = 0)
 		 return -1;
 		 }*/
 
-		return $this->setStatusCommon($user, self::STATUS_VALIDATED, $notrigger, 'MRP_MO_REOPEN');
+		return $this->setStatusCommon($user, self::STATUS_INPROGRESS, $notrigger, 'MRP_MO_REOPEN');
 	}
 
 	/**
