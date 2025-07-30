@@ -188,10 +188,10 @@ if (empty($reshook)) {
 		// The original $object->cancelConsumedAndProducedLines() is designed to do this.
 		// We can call it here, but ensure it only affects consumed lines and deletes them.
 		// The `cancelConsumedAndProducedLines` method in `mo.class.php` already handles
-		// the stock reversal (reception for consumed items).
+		// the stock reversal (reception for consumed items, and delivery for produced items).
 		// Parameters: $user, $mode (0=all, 1=consumed, 2=produced), $also_delete_lines
-		// We want to reverse consumed items and delete the 'consumed' lines.
-		$result_stock_return = $object->cancelConsumedAndProducedLines($user, 1, true, $notrigger);
+		// We want to reverse consumed and produced items and delete the corresponding lines.
+		$result_stock_return = $object->cancelConsumedAndProducedLines($user, 0, true, $notrigger);
 
 		if ($result_stock_return < 0) {
 			$error++;
