@@ -251,9 +251,6 @@ if (empty($reshook)) {
 		$object->setProject(GETPOSTINT('projectid'));
 	}
 
-if ($action == 'confirm_reopen' && $user->admin) {
-    $result = $object->setStatut($object::STATUS_INPROGRESS, 0, '', 'MRP_REOPEN');
-}
 
 
 	if (($action == 'confirm_addconsumeline' && GETPOST('addconsumelinebutton') && $permissiontoadd)
@@ -647,7 +644,7 @@ if ($action == 'confirm_reopen' && $user->admin) {
 						}
 					}
 
-if ($pricetoprocess == 0) {
+if ($pricetoprocess == 0 && $line->fk_product != 483) {
     $sql = "SELECT pmp FROM llx_product WHERE rowid = ".((int)$line->fk_product);
     $resql = $db->query($sql);
     if ($resql) {
@@ -1574,11 +1571,11 @@ if ($object->status == $object::STATUS_PRODUCED) {
 
 					$tmpproduct = new Product($db);
 					$tmpproduct->fetch($line->fk_product);
-					$linecost = price2num($tmpproduct->pmp, 'MT');
+					$linecost = price2num(($tmpproduct->rowid == 483 ? 0 : $tmpproduct->pmp), 'MT');
 
 					if ($object->qty > 0) {
 						// add free consume line cost to $bomcostupdated
-						$costprice = price2num((!empty($tmpproduct->cost_price)) ? $tmpproduct->cost_price : $tmpproduct->pmp);
+						$costprice = price2num((!empty($tmpproduct->cost_price)) ? $tmpproduct->cost_price : ($tmpproduct->rowid == 483 ? 0 : $tmpproduct->pmp));
 						if (empty($costprice)) {
 							require_once DOL_DOCUMENT_ROOT.'/fourn/class/fournisseur.product.class.php';
 							$productFournisseur = new ProductFournisseur($db);
@@ -1624,7 +1621,7 @@ if ($object->status == $object::STATUS_PRODUCED) {
 					}
 
 					if ($action == 'editline' && $lineid == $line->id) {
-						$linecost = price2num($tmpproduct->pmp, 'MT');
+						$linecost = price2num(($tmpproduct->rowid == 483 ? 0 : $tmpproduct->pmp), 'MT');
 
 						$arrayoflines = $object->fetchLinesLinked('consumed', $line->id);
 						$alreadyconsumed = 0;
@@ -2284,14 +2281,14 @@ if ($object->mrptype == 0) { // Manufacture type MO
     }
 
     // Final fallback to PMP value if cost price is empty
-    if (empty($manufacturingcost)) {
+    if (empty($manufacturingcost) && $line->fk_product != 483) {
         $manufacturingcost = price2num($tmpproduct->pmp, 'MU');
         $manufacturingcostsrc = $langs->trans("PMPValue");
     }
 }
 
 // Override manufacturing cost to PMP if product was consumed with negative quantity
-if (isset($productsWithNegativeConsumptionQty[$line->fk_product])) {
+if (isset($productsWithNegativeConsumptionQty[$line->fk_product]) && $line->fk_product != 483) {
     include_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
     $productConsumed = new Product($db);
     $productConsumed->fetch($line->fk_product);
@@ -2464,7 +2461,7 @@ print '</td>';
         if (empty($manufacturingcost)) {
             $manufacturingcost = price2num($tmpproduct->cost_price, 'MU');
         }
-        if (empty($manufacturingcost)) {
+        if (empty($manufacturingcost) && $line->fk_product != 483) {
             $manufacturingcost = price2num($tmpproduct->pmp, 'MU');
         }
     }
